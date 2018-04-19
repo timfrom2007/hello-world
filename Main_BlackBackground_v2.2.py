@@ -116,6 +116,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tableView.setColumnWidth(1, 240)
         self.tableView.setColumnWidth(2, 250)
         self.tags = []
+        self.tagsHash = set()
 
         # other UI setting
         self.btnInventoryStart.setDisabled(True)
@@ -290,10 +291,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if data:
                         if len(data) > 0:
                             self.logger.debug("Get Response")
-                        msgTranArr = self.reader.analyzeData(data)
-                        self.logger.debug("Tag Count: " + str(len(msgTranArr)))
-                        self.analyze_data(msgTranArr)
-                        self.logger.debug("----------Analyze Complete------------") 
+                        if not data in self.tagsHash:
+                            self.tagsHash.add(data)
+                            msgTranArr = self.reader.analyzeData(data)
+                            self.logger.debug("Tag Count: " + str(len(msgTranArr)))
+                            self.analyze_data(msgTranArr)
+                            self.logger.debug("----------Analyze Complete------------")
                 else:
                     self.rs232.sendCmd(self.reader.setWorkingAntenna(self.reader.working_antenna1))
                     self.rs232.sendCmd(self.reader.cmd_realtimeInventory(0x00))
